@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -64,7 +65,7 @@ class ParserWorker(
                     continue
                 }
 
-                if (result != null) {
+                if (result != null && result.date != null) {
                     // Check date threshold
                     val postDate = try {
                         LocalDate.parse(result.date, DateTimeFormatter.ISO_DATE)
@@ -81,7 +82,7 @@ class ParserWorker(
 
                     val outage = ParsedOutage(
                         id = post.id,
-                        barangays = Json.encodeToString(result.barangays),
+                        barangays = json.encodeToString(result.barangays ?: emptyList()),
                         date = result.date,
                         timeStart = result.time_start,
                         timeEnd = result.time_end,
@@ -138,7 +139,7 @@ class ParserWorker(
                 "model": "opencode/big-pickle",
                 "messages": [
                     {"role": "system", "content": "$systemPrompt"},
-                    {"role": "user", "content": ${Json.encodeToString(text)}}
+                    {"role": "user", "content": ${json.encodeToString(text)}}
                 ],
                 "temperature": 0.1
             }

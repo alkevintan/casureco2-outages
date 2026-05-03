@@ -1,5 +1,6 @@
 package com.casureco2.outages.data.dao
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -41,20 +42,25 @@ interface ParsedOutageDao {
     suspend fun deleteOlderThan(cutoffDate: String)
 }
 
- data class OutageWithPost(
+data class OutageWithPost(
     val id: String,
     val barangays: String,
     val date: String,
+    @ColumnInfo(name = "time_start")
     val timeStart: String?,
+    @ColumnInfo(name = "time_end")
     val timeEnd: String?,
     val reason: String,
     val scope: String,
+    @ColumnInfo(name = "raw_post_id")
     val rawPostId: String,
     val synced: Int,
-    val post_id: String,
+    @ColumnInfo(name = "post_id")
+    val postId: String,
     val author: String,
     val text: String,
     val timestamp: String,
+    @ColumnInfo(name = "scraped_at")
     val scrapedAt: String,
     val parsed: Int
 )

@@ -25,7 +25,7 @@ object NotificationHelper {
 
     fun showRunning(context: Context) {
         val notification = NotificationCompat.Builder(context, Config.NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_menu_sync)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle("Scraping in progress")
             .setContentText("Fetching CASURECO 2 advisories...")
             .setOngoing(true)
@@ -38,7 +38,7 @@ object NotificationHelper {
 
     fun showSuccess(context: Context, outages: Int, barangays: Int) {
         val notification = NotificationCompat.Builder(context, Config.NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_menu_save)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle("Sync complete")
             .setContentText("$outages outages updated across $barangays barangays")
             .setAutoCancel(true)
@@ -64,7 +64,7 @@ object NotificationHelper {
 
     fun showSessionExpired(context: Context) {
         val notification = NotificationCompat.Builder(context, Config.NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_lock_idle_lock)
+            .setSmallIcon(android.R.drawable.ic_dialog_alert)
             .setContentTitle("Action needed")
             .setContentText("Tap to re-login to Facebook")
             .setAutoCancel(true)

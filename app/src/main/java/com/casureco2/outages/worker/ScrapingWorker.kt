@@ -116,9 +116,9 @@ class ScrapingWorker(
         // mbasic.facebook.com post selectors
         val articles = doc.select("div[role=article], div.story_body_container, article")
         for (article in articles) {
-            val permalink = article.selectFirst("a[href*=\/story.php]")
+            val permalink = article.selectFirst("a[href*=/story.php]")
                 ?.attr("abs:href")
-                ?: article.selectFirst("a[href*=\/posts\/]")
+                ?: article.selectFirst("a[href*=/posts/]")
                     ?.attr("abs:href")
                 ?: continue
 
