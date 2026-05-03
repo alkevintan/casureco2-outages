@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CASURECO 2 Outage Calendar</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>CASURECO 2 Outage Calendar</h1>
+            <p>Subscribe to power interruption advisories for your barangay</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="Search barangay..." autocomplete="off">
+        </div>
+
+        <div id="loading" class="loading">Loading barangays...</div>
+        <div id="content" class="content" style="display: none;"></div>
+        <div id="error" class="error" style="display: none;"></div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Last updated: <span id="generated-at">—</span></p>
+            <p class="small">Powered by CASURECO 2 Outage Tracker. Not an official CASURECO 2 service.</p>
+        </div>
+    </footer>
+
+    <script>
+        let barangaysData = [];
+
+        async function loadBarangays() {
+            try {
+                const response = await fetch('barangays.json');
+                if (!response.ok) throw new Error('Failed to load barangays');
+                const data = await response.json();
+                barangaysData = data.barangays || [];
+                document.getElementById('generated-at').textContent = new Date(data.generated_at).toLocaleString();
+                renderBarangays(barangaysData);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } catch (err) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').textContent = 'Error loading data: ' + err.message;
+            }
+        }
+
+        function groupByMunicipality(barangays) {
+            return barangays.reduce((groups, b) => {
+                const m = b.municipality || 'Other';
+                if (!groups[m]) groups[m] = [];
+                groups[m].push(b);
+                return groups;
+            }, {});
+        }
+
+        function renderBarangays(barangays) {
+            const container = document.getElementById('content');
+            const grouped = groupByMunicipality(barangays);
+
+            let html = '';
+            for (const [municipality, items] of Object.entries(grouped).sort()) {
+                html += `<section class="municipality">`;
+                html += `<h2>${escapeHtml(municipality)}</h2>`;
+                html += `<div class="barangay-grid">`;
+                for (const b of items.sort((a, c) => a.name.localeCompare(c.name))) {
+                    html += `
+                        <div class="barangay-card">
+                            <h3>${escapeHtml(b.name)}</h3>
+                            <div class="actions">
+                                <a class="btn btn-primary" href="${escapeHtml(b.webcal_url)}" target="_blank">Subscribe</a>
+                                <button class="btn btn-secondary" onclick="copyLink('${escapeHtml(b.ics_url)}')">Copy Link</button>
+                            </div>
+                        </div>
+                    `;
+                }
+                html += `</div></section>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function copyLink(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Link copied to clipboard!');
+            }).catch(() => {
+                prompt('Copy this link:', url);
+            });
+        }
+
+        document.getElementById('search').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = barangaysData.filter(b =>
+                b.name.toLowerCase().includes(query) ||
+                (b.municipality && b.municipality.toLowerCase().includes(query))
+            );
+            renderBarangays(filtered);
+        });
+
+        loadBarangays();
+    </script>
+</body>
+</html>

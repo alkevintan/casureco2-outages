@@ -1,0 +1,3 @@
+<resources>
+    <style name="Theme.CASURECO2Outages" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

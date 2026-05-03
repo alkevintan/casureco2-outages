@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CASURECO 2 Outages</string>
+    <string name="channel_name">Outage Sync</string>
+    <string name="channel_description">Notifications for outage scraping and sync</string>
+</resources>
